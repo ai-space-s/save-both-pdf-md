@@ -18,11 +18,51 @@ SaveBoth는 현재 보고 있는 웹페이지를 클릭 한 번으로 **PDF 파�
 
 ## 설치 방법 (unpacked)
 
-1. 이 저장소를 내려받습니다.
-2. Chrome에서 `chrome://extensions` 를 엽니다.
-3. 우측 상단의 **개발자 모드**를 켭니다.
-4. **압축해제된 확장 프로그램을 로드합니다** 를 클릭합니다.
-5. `saveboth-extension` 폴더를 선택합니다.
+Chrome 웹 스토어에 등록된 확장이 아니므로, 소스 코드를 직접 내려받아 "개발자 모드"로 설치합니다. 한 번만 하면 되는 작업이며, 아래 순서를 그대로 따라 하시면 됩니다.
+
+### 1단계. 저장소 내려받기
+
+두 가지 방법 중 편한 쪽을 선택하세요.
+
+**방법 A. ZIP 파일로 내려받기 (git을 안 쓰신다면 이 방법을 추천)**
+
+1. [github.com/ai-space-s/save-both-pdf-md](https://github.com/ai-space-s/save-both-pdf-md) 페이지로 이동합니다.
+2. 초록색 **Code** 버튼을 클릭한 뒤 **Download ZIP** 을 클릭합니다.
+3. 다운로드된 `save-both-pdf-md-main.zip` 파일을 원하는 위치(예: 바탕화면, 문서 폴더)에 압축 해제합니다.
+4. 압축을 풀면 `save-both-pdf-md-main` 폴더가 생깁니다.
+
+**방법 B. git으로 내려받기 (git이 설치되어 있다면)**
+
+터미널(Windows는 PowerShell 또는 Git Bash, macOS/Linux는 터미널)을 열고 아래 명령을 순서대로 입력합니다.
+
+```bash
+# 1. 원하는 폴더로 이동 (예: 바탕화면)
+cd ~/Desktop
+
+# 2. 저장소를 내려받기(clone)
+git clone https://github.com/ai-space-s/save-both-pdf-md.git
+```
+
+명령을 실행하면 `save-both-pdf-md` 폴더가 생깁니다.
+
+### 2단계. Chrome에서 개발자 모드 켜기
+
+1. Chrome 주소창에 `chrome://extensions` 를 입력하고 Enter를 누릅니다.
+2. 화면 우측 상단에 있는 **개발자 모드** 스위치를 클릭해서 켭니다. (꺼져 있으면 파란색으로 켜집니다)
+
+### 3단계. 확장 프로그램 로드하기
+
+1. 개발자 모드를 켜면 왼쪽 위에 새로 나타나는 **압축해제된 확장 프로그램을 로드합니다** 버튼을 클릭합니다.
+2. 폴더 선택 창이 뜨면, 1단계에서 내려받은 `save-both-pdf-md` 폴더(ZIP이면 `save-both-pdf-md-main`)를 선택하고 **폴더 선택**을 클릭합니다.
+3. 확장 목록에 **SaveBoth**가 나타나면 설치 완료입니다.
+
+### 4단계. 툴바에 고정하기 (선택사항이지만 추천)
+
+1. Chrome 툴바 오른쪽의 퍼즐 조각(🧩) 아이콘을 클릭합니다.
+2. 목록에서 **SaveBoth** 옆의 핀(📌) 아이콘을 클릭해 툴바에 고정합니다.
+3. 이제 툴바에서 바로 SaveBoth 아이콘을 클릭할 수 있습니다.
+
+> 💡 이후 최신 버전으로 업데이트하려면, 저장소를 다시 내려받거나(`git pull` 또는 ZIP 재다운로드) `chrome://extensions` 페이지에서 SaveBoth 카드의 새로고침(↻) 버튼을 누르면 됩니다.
 
 ## 사용 방법
 
