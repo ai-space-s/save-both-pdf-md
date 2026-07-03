@@ -195,6 +195,11 @@ npm test      # node --test tests/unit/
 11. 지원되지 않는 페이지에서 명확한 오류가 표시되는가?
 12. 개발자도구 Network 탭에서 외부 네트워크 요청이 발생하지 않는가?
 
+## 더 알아보기
+
+- 버전별 변경 이력: [CHANGELOG.md](CHANGELOG.md)
+- 개발 과정에서 발견한 문제와 해결 과정: [DEVELOPMENT.md](DEVELOPMENT.md)
+
 ## 라이선스 / 개인정보
 
 개인정보 처리 원칙은 [PRIVACY.md](PRIVACY.md)를 참조하세요.
