@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat Conversation - SaveBoth Fixture</title>
+</head>
+<body>
+  <!-- ChatGPT 스타일: 대화 턴마다 별도의 article -->
+  <div id="thread">
+    <article data-testid="conversation-turn-1">
+      <h5>나의 말:</h5>
+      <p>UserQuestionMarker 크롬 확장 프로그램으로 웹페이지를 PDF와 Markdown으로 저장하는 아이디어를 평가해 주세요.</p>
+    </article>
+    <article data-testid="conversation-turn-2">
+      <h6>ChatGPT의 말:</h6>
+      <p>
+        AssistantAnswerMarker 좋은 아이디어입니다. 로컬 우선 처리로 개인정보를 보호하면서
+        시각 자료와 텍스트 자료를 동시에 보존할 수 있다는 점이 강점입니다. 다만 몇 가지
+        고려할 점이 있습니다. 첫째, 긴 페이지의 캡처 안정성입니다. 둘째, SPA처럼 내부
+        스크롤 컨테이너를 쓰는 페이지 지원입니다. 셋째, Markdown 변환 품질입니다.
+      </p>
+      <pre><code class="language-text">manifest.json
+popup.html
+serviceWorker.js</code></pre>
+    </article>
+    <article data-testid="conversation-turn-3">
+      <h5>나의 말:</h5>
+      <p>SecondQuestionMarker 그럼 다음 단계로 무엇부터 구현해야 할까요?</p>
+    </article>
+  </div>
+</body>
+</html>

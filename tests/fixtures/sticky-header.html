@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sticky Header - SaveBoth Fixture</title>
+  <style>
+    .site-nav { position: fixed; top: 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="/products">NavProductsLink</a>
+    <a href="/pricing">NavPricingLink</a>
+    <a href="/login">NavLoginLink</a>
+  </nav>
+  <article>
+    <h1>Article Under a Sticky Header</h1>
+    <p>
+      This article sits below a fixed navigation bar. When converting to Markdown,
+      the navigation links should be removed while this body text is preserved.
+    </p>
+    <p>
+      Sticky headers may repeat in visual captures, but text extraction should skip
+      navigation elements entirely.
+    </p>
+  </article>
+</body>
+</html>

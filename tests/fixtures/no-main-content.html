@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>No Main Content - SaveBoth Fixture</title>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="/">Logo</a>
+    <a href="/menu">Menu</a>
+  </div>
+  <div class="content-area">
+    <p>
+      This page has no article, main, or role attributes at all. The extractor must
+      fall back to text density analysis to find this block, because it contains the
+      longest continuous prose on the page. Density-based selection looks for the
+      container with the most paragraph text and the fewest navigation links, which
+      is exactly what this section is designed to represent in the test suite.
+    </p>
+    <p>
+      A second paragraph adds more weight to this container so that the scoring
+      heuristic clearly prefers it over the shorter decorative blocks around it.
+    </p>
+  </div>
+  <div class="side-note">Short side note.</div>
+</body>
+</html>

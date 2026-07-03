@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Code Blocks - SaveBoth Fixture</title>
+</head>
+<body>
+  <article>
+    <h1>Working with Fetch API</h1>
+    <p>The following example shows a basic fetch call with inline code like <code>await</code>.</p>
+    <pre><code class="language-javascript">async function loadData(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Request failed');
+  }
+  return response.json();
+}</code></pre>
+    <p>You can also run shell commands:</p>
+    <pre><code class="language-bash">npm install
+npm run dev</code></pre>
+  </article>
+</body>
+</html>

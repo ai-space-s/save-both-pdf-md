@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "SaveBoth",
+  "version": "1.0.0",
+  "description": "Save the current tab as PDF and Markdown at the same time. Processed locally, no server upload.",
+  "permissions": ["activeTab", "scripting", "downloads", "storage"],
+  "action": {
+    "default_title": "SaveBoth",
+    "default_popup": "src/popup/popup.html"
+  },
+  "background": {
+    "service_worker": "src/background/serviceWorker.js"
+  }
+}

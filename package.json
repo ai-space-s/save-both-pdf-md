@@ -1,0 +1,12 @@
+{
+  "name": "saveboth-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension (Manifest V3) that saves the current tab as PDF and Markdown, locally.",
+  "scripts": {
+    "test": "node --test \"tests/unit/*.test.js\""
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  }
+}
