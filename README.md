@@ -4,6 +4,8 @@
 
 SaveBoth는 현재 보고 있는 웹페이지를 클릭 한 번으로 **PDF 파일**과 **Markdown 파일**로 동시에 저장하는 Chrome 확장(Manifest V3)입니다. 모든 처리는 브라우저 안에서만 이루어지며, 어떤 데이터도 외부 서버로 전송하지 않습니다.
 
+* Claude Fable 5가 5일간 사용하는 기간 동안, ChatGPT로 PRD 작성하고, Fable로 만들었읍니다~~
+
 ## 핵심 기능
 
 - **Save PDF + Markdown** — 페이지를 스크롤하며 화면을 캡처해 여러 페이지 PDF로 만들고, 동시에 본문을 Markdown으로 추출해 두 파일을 같은 이름으로 다운로드
