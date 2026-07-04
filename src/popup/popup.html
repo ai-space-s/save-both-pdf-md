@@ -24,9 +24,38 @@
 
   <section id="status" class="status" hidden></section>
 
+  <details class="settings">
+    <summary>Save location settings</summary>
+    <div class="settings-body">
+      <div class="field-label">Save folder</div>
+      <div id="folderDisplay" class="folder-display">Default (Downloads folder)</div>
+
+      <div class="folder-actions">
+        <button id="chooseFolderBtn" class="btn btn-small" type="button">Choose folder…</button>
+        <button id="resetFolderBtn" class="btn btn-small btn-secondary" type="button" hidden>
+          Reset to default
+        </button>
+      </div>
+
+      <p class="settings-hint settings-warning" id="folderPermissionNote" hidden>
+        Access to this folder needs to be reconnected.
+        <button id="reconnectFolderBtn" class="link-btn" type="button">Reconnect</button>
+      </p>
+
+      <label class="checkbox-row">
+        <input id="askEachTimeCheckbox" type="checkbox" />
+        <span>Ask where to save each time instead</span>
+      </label>
+
+      <p class="settings-hint" id="settingsHint">Files are saved to your Downloads folder.</p>
+    </div>
+  </details>
+
   <footer class="app-footer">Processed locally. No server upload.</footer>
 
   <script src="../lib/errorUtils.js"></script>
+  <script src="../lib/settingsUtils.js"></script>
+  <script src="../lib/fsHandleStore.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

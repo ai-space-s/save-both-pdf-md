@@ -3,7 +3,7 @@
  * 팝업의 저장 요청을 받아 PDF 캡처와 Markdown 추출을 조율한다.
  * 모든 처리는 로컬에서 수행되며 외부 네트워크 요청이 없다.
  */
-/* global SaveBothErrors, SaveBothFilename, SaveBothCapture, SaveBothPdf, SaveBothDownload */
+/* global SaveBothErrors, SaveBothFilename, SaveBothCapture, SaveBothPdf, SaveBothDownload, SaveBothSettings */
 
 importScripts(
   '../lib/errorUtils.js',
@@ -11,7 +11,8 @@ importScripts(
   '../lib/metadataUtils.js',
   '../lib/captureUtils.js',
   '../lib/pdfGenerator.js',
-  '../lib/downloadUtils.js'
+  '../lib/downloadUtils.js',
+  '../lib/settingsUtils.js'
 );
 
 const LIMITS = SaveBothCapture.DEFAULT_LIMITS;
@@ -77,6 +78,42 @@ async function setProgress(stage) {
   try {
     await chrome.runtime.sendMessage({ type: 'SB_PROGRESS', stage: stage });
   } catch (e) { /* 팝업이 닫혀 있으면 수신자가 없다 */ }
+}
+
+/**
+ * 사용자가 선택한 폴더에 팝업을 통해 파일을 쓴다.
+ * File System Access API는 Window 컨텍스트(팝업)에서만 지원되므로,
+ * 서비스 워커는 직접 쓰지 못하고 열려 있는 팝업에 메시지로 위임한다.
+ * 팝업이 닫혀 있거나 권한이 없으면 false를 반환해 호출자가 대체 저장하도록 한다.
+ */
+async function writeToChosenFolder(filename, bytes) {
+  try {
+    const res = await chrome.runtime.sendMessage({
+      type: 'SB_FS_WRITE',
+      filename: filename,
+      bytesBase64: SaveBothDownload.uint8ToBase64(bytes)
+    });
+    return !!(res && res.ok);
+  } catch (e) {
+    return false; // 팝업이 닫혀 있어 메시지를 받을 수 없음
+  }
+}
+
+/**
+ * 설정에 따라 사용자가 선택한 폴더에 먼저 시도하고,
+ * 실패하면(팝업 닫힘/권한 없음) 기본 Downloads 위치로 대체 저장한다.
+ * @returns {Promise<{fellBack: boolean}>}
+ */
+async function saveOutputFile(filename, bytes, mime, downloadOptions, settings) {
+  const tryFolder = !!settings.folderName && !settings.askEachTime;
+  if (tryFolder) {
+    const wrote = await writeToChosenFolder(filename, bytes);
+    if (wrote) {
+      return { fellBack: false };
+    }
+  }
+  await SaveBothDownload.downloadBytes(bytes, mime, filename, downloadOptions);
+  return { fellBack: tryFolder };
 }
 
 async function announceDone(result) {
@@ -323,7 +360,14 @@ async function capturePdfImages(tab, tabId, pageInfo) {
 
 async function runSave(mode, tabId) {
   saving = true;
-  const result = { pdf: null, md: null, truncated: false, unsupported: false };
+  const result = {
+    pdf: null,
+    md: null,
+    truncated: false,
+    unsupported: false,
+    pdfFolderFallback: false,
+    mdFolderFallback: false
+  };
 
   try {
     const tab = await chrome.tabs.get(tabId);
@@ -332,6 +376,8 @@ async function runSave(mode, tabId) {
       result.unsupported = true;
     } else {
       await setProgress('Preparing page...');
+      const settings = await SaveBothSettings.getSettings();
+      const downloadOptions = { saveAs: settings.askEachTime };
       await ensureContentScript(tabId);
       const pageInfo = await sendToTab(tabId, { type: 'SB_GET_PAGE_INFO' });
       const baseName = SaveBothFilename.generateBaseFilename(
@@ -352,8 +398,15 @@ async function runSave(mode, tabId) {
           });
 
           await setProgress('Downloading files...');
-          await SaveBothDownload.downloadBytes(pdfBytes, 'application/pdf', baseName + '.pdf');
+          const pdfOutcome = await saveOutputFile(
+            baseName + '.pdf',
+            pdfBytes,
+            'application/pdf',
+            downloadOptions,
+            settings
+          );
           result.pdf = true;
+          result.pdfFolderFallback = pdfOutcome.fellBack;
         } catch (e) {
           console.error('SaveBoth: PDF save failed:', e);
           result.pdf = false;
@@ -375,12 +428,16 @@ async function runSave(mode, tabId) {
 
           await setProgress('Creating files...');
           await setProgress('Downloading files...');
-          await SaveBothDownload.downloadText(
-            extracted.markdown,
-            'text/markdown',
-            baseName + '.md'
+          const mdBytes = new TextEncoder().encode(extracted.markdown);
+          const mdOutcome = await saveOutputFile(
+            baseName + '.md',
+            mdBytes,
+            'text/markdown;charset=utf-8',
+            downloadOptions,
+            settings
           );
           result.md = true;
+          result.mdFolderFallback = mdOutcome.fellBack;
         } catch (e) {
           console.error('SaveBoth: Markdown save failed:', e);
           result.md = false;

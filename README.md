@@ -13,6 +13,7 @@ SaveBoth는 현재 보고 있는 웹페이지를 클릭 한 번으로 **PDF 파�
 - 긴 페이지 지원: viewport 단위로 캡처하여 PDF 여러 페이지로 구성
 - 스마트 페이지 분할: 페이지를 자를 때 콘텐츠(이미지·버튼) 한가운데가 아닌 빈 여백에서 분할
 - SPA 지원: ChatGPT처럼 내부 스크롤 컨테이너를 쓰는 페이지는 컨테이너를 자동 감지해 그 영역을 스크롤·캡처
+- **저장 위치 설정**: 팝업의 "Save location settings"에서 Downloads 하위 저장 폴더를 지정하거나, 저장할 때마다 폴더 선택 창을 띄우도록 설정 가능
 - Markdown에 제목, 원본 URL, 저장 시각(front matter), 본문(제목/링크/코드블록/표/이미지) 포함
 - 저장 후 원래 스크롤 위치 복원
 - 지원되지 않는 페이지(`chrome://` 등)에 대한 명확한 오류 표시
@@ -82,6 +83,15 @@ page-title_2026-07-03_10-30.md
 
 > 저장이 진행되는 동안에는 탭을 그대로 두는 것이 가장 좋습니다. 완료되면 원래 스크롤 위치로 돌아갑니다.
 
+## 저장 위치 설정하기
+
+팝업 하단의 **"Save location settings"**를 펼치면 저장 위치를 설정할 수 있습니다.
+
+1. **폴더 선택 (Choose folder…)** — 버튼을 클릭하면 OS 네이티브 폴더 선택 다이얼로그가 뜹니다. Downloads 안이든 밖이든(바탕화면, 문서 폴더, 외장 드라이브 등) 원하는 폴더를 한 번 지정하면, 이후 저장은 확인창 없이 그 폴더에 조용히 저장됩니다. 지정한 폴더 이름은 설정 화면에 계속 표시되며, **다시 변경(Change folder…)하거나 초기화(Reset to default)하기 전까지 그대로 유지**됩니다.
+2. **저장할 때마다 폴더 선택 (Ask where to save each time)** — 이 체크박스를 켜면 1번 대신, 저장할 때마다 OS의 "다른 이름으로 저장" 창이 떠서 그때그때 원하는 폴더를 고를 수 있습니다. PDF+Markdown을 함께 저장하면 파일마다 창이 뜨므로 총 2번 위치를 지정해야 합니다.
+
+> 💡 브라우저를 재시작하면 보안 정책상 선택한 폴더에 대한 접근 권한이 초기화될 수 있습니다. 이 경우 설정 화면에 "Access to this folder needs to be reconnected" 안내와 **Reconnect** 버튼이 나타나며, 클릭 한 번으로 다시 연결할 수 있습니다(폴더를 다시 선택할 필요는 없습니다). 저장 시점에 팝업이 닫혀 있거나 폴더 접근이 끊겨 있으면, 저장은 실패하지 않고 자동으로 기본 Downloads 폴더에 저장되며 결과 화면에 안내가 표시됩니다.
+
 ## Chrome 권한 설명
 
 | 권한 | 사용 목적 |
@@ -89,7 +99,7 @@ page-title_2026-07-03_10-30.md
 | `activeTab` | 사용자가 확장을 클릭한 **현재 탭**에만 접근 |
 | `scripting` | 현재 탭에 content script를 주입해 DOM 추출·스크롤 제어 |
 | `downloads` | 생성된 PDF/Markdown 파일을 로컬로 다운로드 |
-| `storage` | 저장 진행 상태 등 간단한 로컬 상태 저장 |
+| `storage` | 저장 진행 상태, 저장 위치 설정 등 간단한 로컬 상태 저장 |
 
 `<all_urls>`, `debugger`, host permissions 등 광범위한 권한은 사용하지 않습니다.
 
@@ -131,6 +141,8 @@ page-title_2026-07-03_10-30.md
 8. `chrome://` 같은 브라우저 내부 페이지, 웹 스토어, `file://` 페이지는 저장할 수 없습니다.
 9. 페이지 분할은 콘텐츠 사이 여백을 찾아 이루어지지만, 여백이 전혀 없는 빽빽한 페이지나 화면보다 큰 이미지는 여전히 중간에서 분할될 수 있습니다.
 10. 매우 긴 채팅(ChatGPT 등)은 화면에 렌더되지 않은 과거 메시지가 Markdown에서 빠질 수 있습니다. `Save PDF + Markdown`으로 저장하면 캡처 과정에서 대화를 끝까지 스크롤하므로 더 많은 내용이 포함됩니다.
+11. 선택한 폴더에 파일을 직접 쓰는 기능은 브라우저 표준(File System Access API) 특성상 **팝업이 열려 있을 때만** 동작합니다. 저장 도중 팝업을 닫으면 그 저장은 자동으로 기본 Downloads 폴더에 대체 저장됩니다.
+12. 브라우저 재시작 후에는 선택한 폴더에 대한 접근 권한이 초기화될 수 있습니다. 이 경우 설정 화면의 **Reconnect** 버튼으로 다시 연결해야 합니다(폴더 재선택은 필요 없음).
 
 ## 개발 방법
 
@@ -151,6 +163,8 @@ saveboth-extension/
       metadataUtils.js       front matter 생성
       downloadUtils.js       chrome.downloads 래퍼
       errorUtils.js          URL 검증, 결과 집계
+      settingsUtils.js       저장 위치 설정(askEachTime/folderName) 저장/조회
+      fsHandleStore.js       선택한 폴더 핸들을 IndexedDB에 저장/조회 (팝업 전용)
   tests/
     unit/                    Node 내장 test runner 기반 단위 테스트
     fixtures/                테스트용 HTML

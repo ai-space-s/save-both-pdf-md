@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- 저장 위치 설정 UI (팝업의 "Save location settings"): 네이티브 폴더 선택 다이얼로그로 저장 폴더를 한 번 지정하면 변경 전까지 계속 재사용(File System Access API, `chrome.storage.local` + IndexedDB에만 저장, 추가 권한 불필요), 또는 저장할 때마다 폴더 선택 창 표시
+- 지정한 폴더 접근 권한이 끊긴 경우(브라우저 재시작 등) 재연결(Reconnect) 버튼 제공, 저장 시점에 접근 불가하면 기본 Downloads 폴더로 자동 대체 저장
+
 ## [1.0.0] - 2026-07-04
 
 ### Added
