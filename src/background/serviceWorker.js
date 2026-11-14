@@ -25,6 +25,7 @@ const MAX_PAGE_WIDTH_PX = 1600;
 const CONTENT_SCRIPT_FILES = [
   'src/lib/metadataUtils.js',
   'src/lib/markdownExtractor.js',
+  'src/lib/imageReadiness.js',
   'src/content/contentScript.js'
 ];
 
@@ -244,6 +245,7 @@ async function capturePdfImages(tab, tabId, pageInfo) {
   let truncated = false;
   let y = 0;
   let captured = 0;
+  let incompleteImages = false;
 
   // 가상화 페이지(ChatGPT 등)는 스크롤하는 동안 전체 높이가 계속 변하므로
   // 세그먼트를 미리 계산하지 않고, 매 스크롤마다 실시간 높이로 바닥 도달을 판단한다.
@@ -301,6 +303,12 @@ async function capturePdfImages(tab, tabId, pageInfo) {
     );
 
     await sleep(LIMITS.scrollDelayMs);
+    // Scrolling can mount a lazy image, whose download/decode takes longer than 250ms.
+    // Re-read geometry AFTER loading so image expansion cannot cause an early end.
+    const ready = await sendToTab(tabId, { type: 'SB_PREPARE_CAPTURE' });
+    actualY = Number(ready.scrollY) || 0;
+    livePageHeight = Number(ready.pageHeight) || livePageHeight;
+    incompleteImages = incompleteImages || ready.incompleteImages > 0;
     const wait = MIN_CAPTURE_INTERVAL_MS - (Date.now() - lastCaptureAt);
     if (wait > 0) {
       await sleep(wait);
@@ -319,7 +327,7 @@ async function capturePdfImages(tab, tabId, pageInfo) {
     const cropTopPx = overlapCss > 0 ? Math.round(overlapCss * dpr) : 0;
 
     // 내부 스크롤 컨테이너 모드면 컨테이너의 화면 영역만 사용한다 (ChatGPT 등 SPA)
-    const rect = pageInfo.containerRect;
+    const rect = ready.containerRect;
     const srcRect = rect
       ? {
           x: Math.round(rect.x * dpr),
@@ -353,6 +361,7 @@ async function capturePdfImages(tab, tabId, pageInfo) {
   return {
     images: images,
     truncated: truncated,
+    incompleteImages: incompleteImages,
     // 축소 저장된 경우 PDF 페이지 크기(pt) 계산에 배율을 반영한다
     pixelRatio: dpr * (composer.scale || 1)
   };
@@ -391,6 +400,7 @@ async function runSave(mode, tabId) {
           await setProgress('Capturing PDF...');
           const capture = await capturePdfImages(tab, tabId, pageInfo);
           result.truncated = capture.truncated;
+          result.incompleteImages = capture.incompleteImages;
 
           await setProgress('Creating files...');
           const pdfBytes = SaveBothPdf.createPdfFromJpegs(capture.images, {

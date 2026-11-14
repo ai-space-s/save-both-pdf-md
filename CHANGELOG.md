@@ -37,3 +37,9 @@
 
 [Unreleased]: https://github.com/ai-space-s/save-both-pdf-md/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/ai-space-s/save-both-pdf-md/releases/tag/v1.0.0
+# Unreleased
+
+- ChatGPT 등 지연 로딩 이미지가 회색 자리표시자로 PDF에 저장되는 문제 개선: 캡처 전 이미지 로딩·디코딩·레이아웃 안정화 대기 및 로딩 후 높이 재측정.
+- 이미지 로딩 실패 또는 제한 시간 초과 시 저장 결과에 경고 표시.
+- 이미지로만 구성된 대화 턴의 Markdown 누락 방지, 반응형 이미지의 실제 표시 소스 사용.
+

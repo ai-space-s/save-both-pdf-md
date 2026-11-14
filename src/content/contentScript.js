@@ -198,6 +198,31 @@
   }
 
   chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+    if (msg && msg.type === 'SB_PREPARE_CAPTURE') {
+      self.SaveBothImages.waitForVisibleImages(document, {
+        getBounds: function () {
+          return captureContainer ? captureContainer.getBoundingClientRect() :
+            { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
+        }
+      }).then(function (images) {
+        const docEl = document.scrollingElement || document.documentElement;
+        const rect = captureContainer && captureContainer.getBoundingClientRect();
+        sendResponse({
+          ok: true,
+          scrollY: Math.round(captureContainer ? captureContainer.scrollTop : window.scrollY),
+          pageHeight: captureContainer ? captureContainer.scrollHeight : docEl.scrollHeight,
+          containerRect: rect ? {
+            x: Math.max(0, rect.left), y: Math.max(0, rect.top),
+            width: Math.max(0, Math.min(window.innerWidth, rect.right) - Math.max(0, rect.left)),
+            height: Math.max(0, Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top))
+          } : null,
+          incompleteImages: images.pending + images.failed
+        });
+      }).catch(function (e) {
+        sendResponse({ ok: false, error: String(e.message || e) });
+      });
+      return true;
+    }
     try {
       switch (msg && msg.type) {
         case 'SB_PING':

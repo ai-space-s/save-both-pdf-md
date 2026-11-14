@@ -115,7 +115,8 @@
         return '[' + (text || href) + '](' + href + ')';
       }
       case 'IMG': {
-        const src = resolveUrl(node.getAttribute('src'), ctx.baseUrl);
+        const src = resolveUrl(node.currentSrc || node.getAttribute('src') ||
+          node.getAttribute('data-src'), ctx.baseUrl);
         const alt = collapse(node.getAttribute('alt') || '').trim();
         if (!src) {
           return alt;
@@ -421,7 +422,9 @@
         if (shouldSkip(el)) {
           continue;
         }
-        const len = textLength(el);
+        // Image-only assistant turns must participate in conversation selection too.
+        const hasImage = !!el.querySelector('img');
+        const len = Math.max(textLength(el), hasImage ? 80 : 0);
         if (len >= 20) {
           candidates.push(el);
           totalLen += len;
@@ -433,7 +436,10 @@
       }
 
       // 대화형 페이지: 요소가 여러 개이고 합계가 최대 요소보다 훨씬 크면 전체를 포괄
-      if (candidates.length >= 2 && totalLen > bestLen * 1.5) {
+      const separateImageTurn = sel === 'article' && candidates.some(function (el) {
+        return el.querySelector('img') && best && !best.contains(el);
+      });
+      if (candidates.length >= 2 && (totalLen > bestLen * 1.5 || separateImageTurn)) {
         let ancestor = candidates[0];
         for (const el of candidates) {
           ancestor = commonAncestor(ancestor, el) || (doc.body || ancestor);

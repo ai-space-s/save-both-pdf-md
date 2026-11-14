@@ -11,6 +11,27 @@ const { extractMetadata, buildMarkdownDocument } = require('../../src/lib/metada
 
 const FIXTURE_URL = 'https://example.com/articles/post';
 
+test('an image-only ChatGPT turn is kept alongside a long text answer', () => {
+  const dom = new JSDOM('<main><article><p>' + 'Long answer. '.repeat(100) +
+    '</p></article><article><button><img src="/generated.png" alt="Generated image"></button></article></main>');
+  const main = extractMainContent(dom.window.document);
+  const md = htmlToMarkdown(main, { baseUrl: FIXTURE_URL });
+  assert.ok(md.includes('Long answer.'));
+  assert.ok(md.includes('![Generated image](https://example.com/generated.png)'));
+  dom.window.close();
+});
+
+test('responsive images use the source actually displayed by the browser', () => {
+  const dom = new JSDOM('<img src="/placeholder.png" alt="Generated image">');
+  Object.defineProperty(dom.window.document.querySelector('img'), 'currentSrc', {
+    value: 'https://example.com/full-image.png'
+  });
+  const md = htmlToMarkdown(dom.window.document.body, { baseUrl: FIXTURE_URL });
+  assert.ok(md.includes('https://example.com/full-image.png'));
+  assert.ok(!md.includes('placeholder.png'));
+  dom.window.close();
+});
+
 function loadFixture(name) {
   const html = fs.readFileSync(path.join(__dirname, '..', 'fixtures', name), 'utf8');
   return new JSDOM(html, { url: FIXTURE_URL });

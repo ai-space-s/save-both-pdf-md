@@ -79,6 +79,9 @@
         '\n\nNote: the selected folder was not accessible, so files were saved to Downloads instead. ' +
         'Open "Save location settings" to reconnect.';
     }
+    if (result.incompleteImages) {
+      text += '\n\nNote: some images did not finish loading or could not be loaded. Wait for the images on the page, then save again.';
+    }
     const kindMap = { success: 'success', partial: 'partial', failed: 'error' };
     showStatus(kindMap[agg.status] || 'error', text);
   }
